@@ -10,35 +10,48 @@ def generate_explanation(row, mean, std):
     z_score = (amount - mean) / std if std != 0 else 0
 
     prompt = f"""
-    You are a financial fraud detection assistant.
+        You are a financial fraud detection system.
 
-    Explain why this transaction is anomalous.
+        Explain why this transaction is anomalous.
 
-    Transaction:
-    - Amount: £{int(amount)}
-    - Average: £{int(mean)}
-    - Z-score: {round(z_score, 2)}
+        Transaction:
+        - Amount: £{amount}
+        - Average: £{mean:.2f}
+        - Z-score: {z_score:.2f}
 
-    Rules:
-    - Output ONLY 3 bullet points
-    - Each bullet must be short and clear
-    - NO introductions or filler text
-    - NO phrases like "based on data"
+        STRICT RULES:
+        - ONLY bullet points
+        - MAX 2 bullets
+        - Each bullet must be ONE short sentence
+        - Use numbers (comparisons)
+        - NO introductions
+        - NO explanations like "based on data"
+        - NO repetition
+        - Compare amount to average
+        - Mention z-score threshold
 
-    Example:
-    - Amount far exceeds normal behaviour
-    - Significant deviation from historical pattern
-    - Flagged as statistical outlier
+        Example:
+        - £12000 is 3.4x higher than average (£3500)
+        - Z-score 3.9 indicates extreme deviation
     """
 
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": "llama3",
-            "prompt": prompt,
-            "stream": False
-        },
-        timeout=10
-    )
+    try:
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": "llama3",
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=60
+        )
 
-    return response.json()["response"].strip()
+        return response.json()["response"].strip()
+
+    except Exception:
+        # FALLBACK LOGIC (CRITICAL FOR PROD)
+        return f"""
+        - Amount (£{amount}) is significantly higher than average (£{mean:.2f})
+        - Z-score of {z_score:.2f} indicates strong statistical deviation
+        - Transaction exceeds expected behaviour range
+        """

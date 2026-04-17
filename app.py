@@ -61,6 +61,9 @@ if df is not None:
     results = st.session_state.results
     mean = st.session_state.mean
 
+    if results is not None:
+        results = sorted(results, key=lambda x: abs(x["z_score"]), reverse=True)
+
     # -----------------------
     # DISPLAY RESULTS
     # -----------------------
@@ -69,6 +72,15 @@ if df is not None:
             st.success("No anomalies detected")
         else:
             st.error(f"{len(results)} anomalies found")
+
+            anomaly_ratio = len(results) / len(df)
+
+            if anomaly_ratio > 0.1:
+                st.error("🚨 High anomaly rate — potential fraud pattern")
+            elif anomaly_ratio > 0.05:
+                st.warning("⚠️ Moderate anomaly activity")
+            else:
+                st.success("✅ Low anomaly activity")
 
             for r in results:
                 st.subheader(f"⚠️ User {r['user_id']}")
@@ -96,23 +108,45 @@ if df is not None:
     if mean is not None:
         st.write("### Transaction Distribution")
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(7, 3.5))
+
+        # White background
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("white")
 
         # Histogram
-        ax.hist(df["amount"], bins=15, alpha=0.7)
+        counts, bins, patches = ax.hist(
+            df["amount"],
+            bins=20,
+            alpha=0.7
+        )
 
         # Mean line
-        ax.axvline(mean, linestyle="dashed", linewidth=2)
+        ax.axvline(mean, linestyle="dashed", linewidth=2, label="Mean")
 
-        # Highlight anomalies
+        # Highlight anomalies (thin vertical lines)
         if results:
             anomaly_amounts = [r["amount"] for r in results]
-            ax.scatter(anomaly_amounts, [0]*len(anomaly_amounts))
 
-        # Labels
-        ax.set_title("Transaction Distribution")
-        ax.set_xlabel("Transaction Amount (£)")
-        ax.set_ylabel("Frequency")
+            for amt in anomaly_amounts:
+                ax.axvline(amt, linewidth=2, alpha=0.6, label="Anomaly")
+
+        # Remove duplicate legend entries
+        handles, labels = ax.get_legend_handles_labels()
+        unique = dict(zip(labels, handles))
+        ax.legend(unique.values(), unique.keys())
+
+        # Clean styling
+        ax.set_title("Transaction Distribution", fontsize=10)
+        ax.set_xlabel("Amount (£)", fontsize=6)
+        ax.set_ylabel("Frequency", fontsize=6)
+
+        # Light grid (not dark)
+        ax.grid(alpha=0.2)
+
+        # Remove top/right borders
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
 
         st.pyplot(fig)
 

@@ -1,17 +1,34 @@
-from sklearn.ensemble import IsolationForest
+import pandas as pd
 
 def detect_anomalies(df):
-    model = IsolationForest(contamination=0.1, random_state=42)
+    # Ensure correct data types
+    df = df.copy()
+    df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
 
-    df["anomaly"] = model.fit_predict(df[["amount"]])
+    # Drop invalid rows
+    df = df.dropna(subset=["amount"])
 
-    # 🔥 Add statistical context
+    # -----------------------
+    # GLOBAL STATISTICS
+    # -----------------------
     mean = df["amount"].mean()
     std = df["amount"].std()
 
-    df["avg_amount"] = mean
-    df["z_score"] = (df["amount"] - mean) / std
+    # Avoid division by zero
+    if std == 0:
+        df["z_score"] = 0
+    else:
+        df["z_score"] = (df["amount"] - mean) / std
 
-    anomalies = df[df["anomaly"] == -1]
+    # -----------------------
+    # ANOMALY LOGIC
+    # -----------------------
+    # Only keep strong anomalies
+    anomalies = df[abs(df["z_score"]) > 2]
 
-    return anomalies.drop(columns=["anomaly"]), mean, std
+    # -----------------------
+    # CLEAN OUTPUT
+    # -----------------------
+    anomalies = anomalies[["user_id", "amount", "z_score"]]
+
+    return anomalies, mean, std
