@@ -5,7 +5,7 @@ def plot_transaction_distribution(df, results, mean, std):
 
     if mean is not None and std is not None:
         upper = mean + 2 * std
-        lower = mean - 2 * std
+        lower = max(0, mean - 2 * std)
     else:
         upper, lower = None, None
 
@@ -43,7 +43,8 @@ def plot_transaction_distribution(df, results, mean, std):
 
         fig.add_trace(go.Scatter(
             x=anomaly_amounts,
-            y=[max(counts) * 0.15] * len(anomaly_amounts),
+            # y=[max(counts) * 0.15] * len(anomaly_amounts),
+            y=[0] * len(anomaly_amounts),
             mode="markers",
             name="Anomalies",
             marker=dict(color="red", size=10),
@@ -112,7 +113,8 @@ def plot_transaction_distribution(df, results, mean, std):
             linecolor="black",
             tickcolor="black",
             zeroline=False,
-            tickformat="£,.0f",
+            tickformat=",.0f",
+            tickprefix="£",
             type="log"
         ),
 
