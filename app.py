@@ -9,21 +9,31 @@ st.title("🚨 AI Anomaly Detection System")
 st.write("Detect unusual financial transactions and explain them using AI")
 
 # -----------------------
+# SESSION STATE INIT
+# -----------------------
+if "df" not in st.session_state:
+    st.session_state.df = None
+
+# -----------------------
 # FILE UPLOAD
 # -----------------------
 uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
-df = None
-
 if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-else:
-    st.info("Or use sample data below")
-    if st.button("Use Sample Data"):
-        df = pd.DataFrame({
-            "user_id": [1, 2, 3, 4, 5, 6, 7, 8],
-            "amount": [100, 200, 150, 300, 12000, 250, 180, 15000]
-        })
+    st.session_state.df = pd.read_csv(uploaded_file)
+
+# -----------------------
+# SAMPLE DATA BUTTON
+# -----------------------
+st.info("Or use sample data below")
+
+if st.button("Use Sample Data"):
+    st.session_state.df = pd.DataFrame({
+        "user_id": [1, 2, 3, 4, 5, 6, 7, 8],
+        "amount": [100, 200, 150, 300, 12000, 250, 180, 15000]
+    })
+
+df = st.session_state.df
 
 # -----------------------
 # RUN DETECTION
@@ -31,7 +41,7 @@ else:
 if df is not None:
     st.write("### Data Preview")
     st.dataframe(df)
-
+    
     if st.button("Run Detection"):
         with st.spinner("Detecting anomalies..."):
             results = run_pipeline(df)
@@ -49,3 +59,8 @@ if df is not None:
 
                 for sentence in cleaned:
                     st.write(f"• {sentence}")
+    
+    st.caption(f"Rows: {len(df)}")
+
+else:
+    st.warning("Please upload a file or use sample data")
