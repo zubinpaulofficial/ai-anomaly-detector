@@ -43,7 +43,6 @@ def plot_transaction_distribution(df, results, mean, std):
 
         fig.add_trace(go.Scatter(
             x=anomaly_amounts,
-            # y=[max(counts) * 0.15] * len(anomaly_amounts),
             y=[0] * len(anomaly_amounts),
             mode="markers",
             name="Anomalies",
@@ -53,7 +52,7 @@ def plot_transaction_distribution(df, results, mean, std):
             ],
             hovertemplate=(
                 "User ID: %{customdata[0]}<br>"
-                "Amount: £%{x}<br>"
+                "Amount: £%{x:,}<br>"
                 "Z-Score: %{customdata[1]:.2f}"
                 "<extra></extra>"
             )
@@ -114,8 +113,7 @@ def plot_transaction_distribution(df, results, mean, std):
             tickcolor="black",
             zeroline=False,
             tickformat=",.0f",
-            tickprefix="£",
-            type="log"
+            tickprefix="£"
         ),
 
         yaxis=dict(
