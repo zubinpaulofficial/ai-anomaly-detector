@@ -112,7 +112,7 @@ def plot_transaction_distribution(df, results, mean, std):
             linecolor="black",
             tickcolor="black",
             zeroline=False,
-            tickformat="£,.0f"
+            tickformat="£,.0f",
             type="log"
         ),
 
