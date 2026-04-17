@@ -1,5 +1,11 @@
 # AI Anomaly Detection System
 
+## Live Demo
+
+https://ai-anomaly-detector-zubin.streamlit.app/
+
+---
+
 A production-style data application that detects anomalous financial transactions using statistical methods and explains them using AI.
 
 ---
@@ -87,12 +93,6 @@ Visualization (Plotly)
         ↓
 Streamlit UI
 ```
-
----
-
-## Live Demo
-
-https://ai-anomaly-detector-zubin.streamlit.app/
 
 ---
 
