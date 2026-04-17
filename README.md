@@ -92,7 +92,7 @@ Streamlit UI
 
 ## Live Demo
 
-[*\[Streamlit App Link]*](https://ai-anomaly-detector-zubin.streamlit.app/)
+https://ai-anomaly-detector-zubin.streamlit.app/
 
 ---
 
@@ -209,6 +209,6 @@ streamlit run app.py
 
 **Zubin Paul**
 Data Engineer | Data Analyst
-[LinkedIn](#) | [GitHub](#)
+[LinkedIn](https://www.linkedin.com/in/zubinpaulofficial/)
 
 ---
