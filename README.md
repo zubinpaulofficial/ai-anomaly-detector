@@ -1,10 +1,10 @@
-# 🚨 AI Anomaly Detection System
+# AI Anomaly Detection System
 
 A production-style data application that detects anomalous financial transactions using statistical methods and explains them using AI.
 
 ---
 
-## 📌 Overview
+## Overview
 
 This project simulates a real-world fraud detection system used in financial platforms. It combines:
 
@@ -17,9 +17,9 @@ Users can upload transaction data or use a sample dataset to identify unusual ac
 
 ---
 
-## ⚙️ Features
+## Features
 
-### 🔍 Anomaly Detection
+### Anomaly Detection
 
 * Uses **Z-score based detection**
 * Flags transactions where deviation > 2 standard deviations
@@ -31,7 +31,7 @@ Users can upload transaction data or use a sample dataset to identify unusual ac
 
 ---
 
-### 🤖 AI Explanations
+### AI Explanations
 
 * Integrates with **HuggingFace LLM API**
 * Generates concise, data-driven explanations
@@ -43,7 +43,7 @@ Users can upload transaction data or use a sample dataset to identify unusual ac
 
 ---
 
-### 📊 Interactive Visualization
+### Interactive Visualization
 
 * Built using **Plotly**
 * Features:
@@ -55,7 +55,7 @@ Users can upload transaction data or use a sample dataset to identify unusual ac
 
 ---
 
-### 🧠 Intelligent Pipeline
+### Intelligent Pipeline
 
 * Modular architecture:
 
@@ -70,7 +70,7 @@ Users can upload transaction data or use a sample dataset to identify unusual ac
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```text
 User Input (CSV / Sample Data)
@@ -90,13 +90,13 @@ Streamlit UI
 
 ---
 
-## 🚀 Live Demo
+## Live Demo
 
-👉 *[Add your Streamlit link here]*
+[*\[Streamlit App Link]*](https://ai-anomaly-detector-zubin.streamlit.app/)
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Python**
 * **Pandas / NumPy**
@@ -107,7 +107,7 @@ Streamlit UI
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 ai-anomaly-detector/
@@ -132,7 +132,7 @@ ai-anomaly-detector/
 
 ---
 
-## ▶️ Running Locally
+## Running Locally
 
 ### 1. Clone the repo
 
@@ -176,7 +176,7 @@ streamlit run app.py
 
 ---
 
-## 📈 Example Output
+## Example Output
 
 * Detects high-value anomalies (e.g. £25,000 transactions)
 * Provides explanation like:
@@ -186,7 +186,7 @@ streamlit run app.py
 
 ---
 
-## 🎯 Key Highlights
+## Key Highlights
 
 * Designed like a **real-world fraud detection system**
 * Combines **data engineering + analytics + AI**
@@ -195,7 +195,7 @@ streamlit run app.py
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 * Per-user behavioural anomaly detection
 * Isolation Forest / ML-based detection
@@ -205,7 +205,7 @@ streamlit run app.py
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Zubin Paul**
 Data Engineer | Data Analyst
