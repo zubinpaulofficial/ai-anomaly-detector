@@ -2,32 +2,33 @@ import requests
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
-def generate_explanation(row):
+def generate_explanation(row, mean, std):
     user_id = row["user_id"]
     amount = row["amount"]
+
+    # Calculate z-score safely
+    z_score = (amount - mean) / std if std != 0 else 0
 
     prompt = f"""
     You are a financial fraud detection assistant.
 
-    Explain why the following transaction is anomalous.
+    Explain why this transaction is anomalous.
 
     Transaction:
-    - User ID: {user_id}
-    - Amount: £{amount}
+    - Amount: £{int(amount)}
+    - Average: £{int(mean)}
+    - Z-score: {round(z_score, 2)}
 
     Rules:
-    - Be concise and direct
-    - DO NOT include introductions, summaries, or filler text
-    - DO NOT say things like "Based on the provided data"
-    - DO NOT repeat the question
-    - Output ONLY bullet points
-    - Each bullet point must be a short, clear reason
-    - Each bullet must be a COMPLETE sentence on ONE line
+    - Output ONLY 3 bullet points
+    - Each bullet must be short and clear
+    - NO introductions or filler text
+    - NO phrases like "based on data"
 
-    Output format:
-    - Reason 1
-    - Reason 2
-    - Reason 3
+    Example:
+    - Amount far exceeds normal behaviour
+    - Significant deviation from historical pattern
+    - Flagged as statistical outlier
     """
 
     response = requests.post(

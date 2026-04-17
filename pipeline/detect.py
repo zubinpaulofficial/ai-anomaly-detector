@@ -5,13 +5,13 @@ def detect_anomalies(df):
 
     df["anomaly"] = model.fit_predict(df[["amount"]])
 
-    # compute average
-    avg_amount = df["amount"].mean()
+    # 🔥 Add statistical context
+    mean = df["amount"].mean()
+    std = df["amount"].std()
 
-    # relative feature
-    df["is_high"] = df["amount"] > (avg_amount * 3)
-    df["avg_amount"] = avg_amount
+    df["avg_amount"] = mean
+    df["z_score"] = (df["amount"] - mean) / std
 
     anomalies = df[df["anomaly"] == -1]
 
-    return anomalies.drop(columns=["anomaly"])
+    return anomalies.drop(columns=["anomaly"]), mean, std

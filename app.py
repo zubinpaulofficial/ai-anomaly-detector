@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from pipeline.ingest import run_pipeline
 from utils import clean_explanation
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="AI Anomaly Detector", layout="wide")
 
@@ -13,6 +14,12 @@ st.write("Detect unusual financial transactions and explain them using AI")
 # -----------------------
 if "df" not in st.session_state:
     st.session_state.df = None
+
+if "results" not in st.session_state:
+    st.session_state.results = None
+
+if "mean" not in st.session_state:
+    st.session_state.mean = None
 
 # -----------------------
 # FILE UPLOAD
@@ -41,11 +48,23 @@ df = st.session_state.df
 if df is not None:
     st.write("### Data Preview")
     st.dataframe(df)
-    
+    st.caption(f"Rows: {len(df)}")
+
     if st.button("Run Detection"):
         with st.spinner("Detecting anomalies..."):
-            results = run_pipeline(df)
+            results, mean, std = run_pipeline(df)
 
+            # Store in session state
+            st.session_state.results = results
+            st.session_state.mean = mean
+
+    results = st.session_state.results
+    mean = st.session_state.mean
+
+    # -----------------------
+    # DISPLAY RESULTS
+    # -----------------------
+    if results is not None:
         if not results:
             st.success("No anomalies detected")
         else:
@@ -53,14 +72,49 @@ if df is not None:
 
             for r in results:
                 st.subheader(f"⚠️ User {r['user_id']}")
-                st.write(f"Amount: £{r['amount']}")
 
+                # risk severity
+                if abs(r["z_score"]) > 3:
+                    st.error("🔴 High Risk")
+                elif abs(r["z_score"]) > 2:
+                    st.warning("🟠 Medium Risk")
+                else:
+                    st.info("🟡 Low Risk")
+
+                # Amount + Z-score
+                st.write(f"Amount: £{int(r['amount']):,}")
+                st.write(f"Z-Score: {round(r['z_score'], 2)}")
+
+                # Explanation
                 cleaned = clean_explanation(r["explanation"])
-
                 for sentence in cleaned:
                     st.write(f"• {sentence}")
-    
-    st.caption(f"Rows: {len(df)}")
 
-else:
-    st.warning("Please upload a file or use sample data")
+    # -----------------------
+    # VISUALIZATION
+    # -----------------------
+    if mean is not None:
+        st.write("### Transaction Distribution")
+
+        fig, ax = plt.subplots()
+
+        # Histogram
+        ax.hist(df["amount"], bins=15, alpha=0.7)
+
+        # Mean line
+        ax.axvline(mean, linestyle="dashed", linewidth=2)
+
+        # Highlight anomalies
+        if results:
+            anomaly_amounts = [r["amount"] for r in results]
+            ax.scatter(anomaly_amounts, [0]*len(anomaly_amounts))
+
+        # Labels
+        ax.set_title("Transaction Distribution")
+        ax.set_xlabel("Transaction Amount (£)")
+        ax.set_ylabel("Frequency")
+
+        st.pyplot(fig)
+
+    else:
+        st.warning("Please upload a file or use sample data")
