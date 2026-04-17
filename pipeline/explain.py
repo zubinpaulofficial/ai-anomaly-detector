@@ -49,7 +49,7 @@ def generate_explanation(row, mean, std):
         return response.json()["response"].strip()
 
     except Exception:
-        # FALLBACK LOGIC (CRITICAL FOR PROD)
+        # FALLBACK LOGIC
         return f"""
         - Amount (£{amount}) is significantly higher than average (£{mean:.2f})
         - Z-score of {z_score:.2f} indicates strong statistical deviation

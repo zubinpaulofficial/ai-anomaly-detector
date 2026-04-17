@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 from pipeline.ingest import run_pipeline
 from utils import clean_explanation
-import matplotlib.pyplot as plt
+import numpy as np
+from visualization.plots import plot_transaction_distribution
 
 st.set_page_config(page_title="AI Anomaly Detector", layout="wide")
 
@@ -21,6 +22,9 @@ if "results" not in st.session_state:
 if "mean" not in st.session_state:
     st.session_state.mean = None
 
+if "std" not in st.session_state:
+    st.session_state.std = None
+
 # -----------------------
 # FILE UPLOAD
 # -----------------------
@@ -35,10 +39,11 @@ if uploaded_file:
 st.info("Or use sample data below")
 
 if st.button("Use Sample Data"):
-    st.session_state.df = pd.DataFrame({
-        "user_id": [1, 2, 3, 4, 5, 6, 7, 8],
-        "amount": [100, 200, 150, 300, 12000, 250, 180, 15000]
-    })
+    try:
+        st.session_state.df = pd.read_csv("data/transactions_2.csv")
+        st.success("Sample dataset loaded")
+    except Exception as e:
+        st.error(f"Failed to load sample data: {e}")
 
 df = st.session_state.df
 
@@ -57,9 +62,18 @@ if df is not None:
             # Store in session state
             st.session_state.results = results
             st.session_state.mean = mean
+            st.session_state.std = std
 
     results = st.session_state.results
     mean = st.session_state.mean
+    std = st.session_state.std
+
+
+    if mean is not None and std is not None:
+        upper = mean + 2 * std
+        lower = mean - 2 * std
+    else:
+        upper, lower = None, None
 
     if results is not None:
         results = sorted(results, key=lambda x: abs(x["z_score"]), reverse=True)
@@ -108,47 +122,8 @@ if df is not None:
     if mean is not None:
         st.write("### Transaction Distribution")
 
-        fig, ax = plt.subplots(figsize=(7, 3.5))
+        fig = plot_transaction_distribution(df, results, mean, std)
 
-        # White background
-        fig.patch.set_facecolor("white")
-        ax.set_facecolor("white")
-
-        # Histogram
-        counts, bins, patches = ax.hist(
-            df["amount"],
-            bins=20,
-            alpha=0.7
-        )
-
-        # Mean line
-        ax.axvline(mean, linestyle="dashed", linewidth=2, label="Mean")
-
-        # Highlight anomalies (thin vertical lines)
-        if results:
-            anomaly_amounts = [r["amount"] for r in results]
-
-            for amt in anomaly_amounts:
-                ax.axvline(amt, linewidth=2, alpha=0.6, label="Anomaly")
-
-        # Remove duplicate legend entries
-        handles, labels = ax.get_legend_handles_labels()
-        unique = dict(zip(labels, handles))
-        ax.legend(unique.values(), unique.keys())
-
-        # Clean styling
-        ax.set_title("Transaction Distribution", fontsize=10)
-        ax.set_xlabel("Amount (£)", fontsize=6)
-        ax.set_ylabel("Frequency", fontsize=6)
-
-        # Light grid (not dark)
-        ax.grid(alpha=0.2)
-
-        # Remove top/right borders
-        ax.spines["top"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-
-        st.pyplot(fig)
-
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("Please upload a file or use sample data")
