@@ -71,7 +71,7 @@ if df is not None:
 
     if mean is not None and std is not None:
         upper = mean + 2 * std
-        lower = mean - 2 * std
+        lower = max(0, mean - 2 * std)
     else:
         upper, lower = None, None
 

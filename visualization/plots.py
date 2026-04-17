@@ -113,6 +113,7 @@ def plot_transaction_distribution(df, results, mean, std):
             tickcolor="black",
             zeroline=False,
             tickformat="£,.0f"
+            type="log"
         ),
 
         yaxis=dict(
